@@ -1,47 +1,79 @@
 package RaceCondition;
 
+import java.util.Random;
+
 public class Client2 implements Runnable {
-    private final String name = "Client2";
-    private final int accountNum = 5349;
+    private final int clientID = 2;
+    private int totalTransactions;
     private BankAccount bankAccount;
-    private boolean sufficientFunds = true;
+    private boolean running;
+    private Random random = new Random();
+    private double newBalance;
 
     public Client2(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
     }
 
-    public String getName() {
-        return name;
+    public int getClientID() {
+        return clientID;
     }
 
-    public int getAccountNum() {
-        return accountNum;
+    public int getTotalTransactions() {
+        return totalTransactions;
     }
 
-    public synchronized void withdraw2(double amount) {
-        System.out.println(bankAccount.getBalance());
-        double newBalance = bankAccount.getBalance();
-        while (sufficientFunds) {
-            newBalance = bankAccount.getBalance() - amount;
+    public void setTotalTransactions(int totalTransactions) {
+        this.totalTransactions = totalTransactions;
+    }
+
+    public BankAccount getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(BankAccount bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
+    public void performTransaction() {
+        double balance = bankAccount.getBalance();
+        double amount = 1000.00;
+        boolean isDeposit = random.nextBoolean();
+
+        if (isDeposit) {
+            bankAccount.deposit(amount);
+            newBalance = balance + amount;
             bankAccount.setBalance(newBalance);
-            System.out.println(newBalance + " client 2 withdraw");
-            if(bankAccount.getBalance() < amount) {
-                sufficientFunds = false;
-                System.out.println(newBalance + " client 2 end");
+            totalTransactions++;
+            System.out.println("Client " + clientID + " transaction deposited: " + amount + " to " + newBalance);
+            System.out.println("New balance: " + newBalance);
+            System.out.println("Total transactions of Client 2: "+ totalTransactions);
+        } else {
+            if (balance >= amount) {
+                bankAccount.withdraw(amount);
+                newBalance = balance - amount;
+                totalTransactions++;
+                System.out.println("Client " + clientID + " transaction withdrew: " + amount + " to " + newBalance);
+                System.out.println("New balance: " + newBalance);
+                System.out.println("Total transactions of Client 2: " + totalTransactions);
             }
         }
 
-
     }
+
 
     @Override
     public void run() {
-        withdraw2(4532.32);
-
-        try{
-            Thread.sleep(1000);
-        }catch(InterruptedException e){
-            Thread.currentThread().interrupt();
+        running = true;
+        while (running) {
+            performTransaction();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
     }
+
+
 }
