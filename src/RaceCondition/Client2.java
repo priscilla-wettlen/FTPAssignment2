@@ -38,7 +38,7 @@ public class Client2 implements Runnable {
 
 
 public void performTransaction() {
-    double amount = 1000.00;
+    double amount = random.nextDouble(1000.00);
     boolean isDeposit = random.nextBoolean();
 
     if (isDeposit) {
@@ -61,7 +61,7 @@ public void performTransaction() {
     @Override
     public void run() {
         running = true;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             performTransaction();
         }
 
