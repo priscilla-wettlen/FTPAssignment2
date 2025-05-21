@@ -4,75 +4,67 @@ import java.util.Random;
 
 public class Client2 implements Runnable {
     private final int clientID = 2;
-    private int totalTransactions;
+    private int nbrOfTransactions;
     private BankAccount bankAccount;
     private boolean running;
     private Random random = new Random();
     private double newBalance;
+    private double updatedBalance;
+    private double transactionsTotal = 0.0;
 
     public Client2(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
     }
 
-    public int getClientID() {
-        return clientID;
+    public double getUpdatedBalance() {
+        return updatedBalance;
     }
 
-    public int getTotalTransactions() {
-        return totalTransactions;
+    public void setUpdatedBalance(double updatedBalance) {
+        this.updatedBalance = updatedBalance;
     }
 
-    public void setTotalTransactions(int totalTransactions) {
-        this.totalTransactions = totalTransactions;
+    public double getNewBalance() {
+        return newBalance;
     }
 
-    public BankAccount getBankAccount() {
-        return bankAccount;
+    public void setNewBalance(double newBalance) {
+        this.newBalance = newBalance;
     }
 
-    public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
+    public double getTransactionsTotal() {
+        return transactionsTotal;
     }
 
-    public void performTransaction() {
-        double balance = bankAccount.getBalance();
-        double amount = 1000.00;
-        boolean isDeposit = random.nextBoolean();
 
-        if (isDeposit) {
-            bankAccount.deposit(amount);
-            newBalance = balance + amount;
-            bankAccount.setBalance(newBalance);
-            totalTransactions++;
-            System.out.println("Client " + clientID + " transaction deposited: " + amount + " to " + newBalance);
-            System.out.println("New balance: " + newBalance);
-            System.out.println("Total transactions of Client 2: "+ totalTransactions);
-        } else {
-            if (balance >= amount) {
-                bankAccount.withdraw(amount);
-                newBalance = balance - amount;
-                totalTransactions++;
-                System.out.println("Client " + clientID + " transaction withdrew: " + amount + " to " + newBalance);
-                System.out.println("New balance: " + newBalance);
-                System.out.println("Total transactions of Client 2: " + totalTransactions);
-            }
+public void performTransaction() {
+    double amount = 1000.00;
+    boolean isDeposit = random.nextBoolean();
+
+    if (isDeposit) {
+        bankAccount.deposit(amount);
+        transactionsTotal += amount;
+        nbrOfTransactions++;
+        updatedBalance = bankAccount.getBalance();
+    } else {
+        if (bankAccount.getBalance() >= amount) {
+            bankAccount.withdraw(amount);
+            transactionsTotal -= amount;
+            nbrOfTransactions++;
         }
-
+        updatedBalance = bankAccount.getBalance();
     }
+
+}
 
 
     @Override
     public void run() {
         running = true;
-        while (running) {
+        for (int i = 0; i < 1000; i++) {
             performTransaction();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
         }
+
     }
 
 

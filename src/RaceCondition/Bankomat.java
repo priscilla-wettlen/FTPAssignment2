@@ -18,8 +18,18 @@ public class Bankomat {
         c1Thread = new Thread(client1);
         c2Thread = new Thread(client2);
 
+
         c1Thread.start();
         c2Thread.start();
+
+        try {
+            c1Thread.join();
+            c2Thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
